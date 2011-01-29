@@ -11,11 +11,10 @@
  * 	@brief This file contains the functions for controlling the 7-seg display.
  */
 
+#include	"seven_segment.h"
 
-/**
- * @brief Pointer to the seven-segment display. Used to writing hex digits.
- */
-unsigned char *pDisplay; 
+
+unsigned char display [] = {ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, A, B, C, D, E, F};
 
 
 
@@ -26,7 +25,14 @@ unsigned char *pDisplay;
 /*===========================================================================*/ 
 void seven_seg_init (void) 
 {
+	short *pCSCR3 = (short*) CSCR3;
+	short *pCSMR3 = (short*) CSMR3;
 
+	/* Set Chip Select Control Register 3 */
+	*pCSCR3 = (short)CS_AA_R_W;
+
+	/* Clear Chip Select Mask Register 3 */
+	*pCSMR3 = (short)0;
 } /* end seven_seg_init () */
 
 

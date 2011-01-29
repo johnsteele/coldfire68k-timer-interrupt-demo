@@ -13,18 +13,7 @@
  * @brief Contains interrupt functionality for Timer 1 on the ColdFire.
  */
 
-/*===========================================================================*/
-/*===============================[ Includes ]================================*/
-/*===========================================================================*/
 #include "interrupt_timer.h"
-#include "seven_segment.h"
-
-
-
-/**
- * @brief Used for accessing register addresses.
- */
-typedef unsigned short WORD; 
 
 
 /*===========================================================================*/
@@ -66,17 +55,26 @@ void register_timer_interrupt (unsigned long function)
 void start_time ()
 {
 	volatile WORD *pMem;
-	pMem  = (WORD *)TTMR1;
+
+	/* Clear the (Timer 1 Mode Register), also stops Timer 1 if it is running. */
+	pMem  = (WORD *)TMR1;
 	*pMem = (WORD)0x0000;
 
-	pMem  = (WORD *)TTCN1;
+	/* Clear the (Timer 1 Counter Register). Sets counter to zero. */
+	pMem  = (WORD *)TCN1;
 	*pMem = (WORD)0x0000;
 
-	pMem  = (WORD *)TTRR1;
+	/* 
+	 * Set (Timer 1 Reference Register) to a reference value. This value will be 
+	 * compared with the free-running timer counter (TCN1). TCN1 will count up to
+	 * this number to determine when to stop and/or interrupt.  
+	 */
+	pMem  = (WORD *)TRR1;
 	*pMem = (WORD)0x337F;
 
-	pMem  = (WORD *)TTMR1;
-	*pMem = (WORD)0xFF1D; 
+	/* Set and start the timer */
+	pMem  = (WORD *)TMR1;
+	*pMem = (WORD)TMR_CFG; 
 } /* end start_time () */ 
 
 
@@ -87,9 +85,10 @@ void start_time ()
  */
 /*===========================================================================*/
 void stop_time () 
-{
+{ 
 	volatile WORD *pMem;
-	pMem  = (WORD *)TTMR1;
-	*pMem = (WORD)TTMR1;	
+	/* Clear (Timer 1 Mode Register) and stop the timer. */
+	pMem  = (WORD *)TMR1;
+	*pMem = (WORD)0x0000;	
 } /* end stop_time () */
 

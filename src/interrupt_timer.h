@@ -1,5 +1,5 @@
 /**
- * @file	  interrupt_timer.h
+ * @file interrupt_timer.h
  *
  * @author	John Steele <EMAIL:programjsteele {at} gmail {dot} com>
  * @version	1.0.0
@@ -16,30 +16,78 @@
 #ifndef __INTERRUPT_TIMER_H__
 #define __INTERRUPT_TIMER_H__
 
-
-/**
- * @brief This must agree with what is set up in the P&E Wiggler.
- */
 #ifndef MBAR
-#define	MBAR 0x20000000 
-#endif	/* MBAR */
+#define	MBAR
+#endif /* MBAR */
+
+/*****************************************************************************
+ *								Timer Registers
+ *
+ * The ColdFire's timers are both composed of five memory-mapped registers. 
+ * You deal with the timers by reading and writing to these registers.
+ ******************************************************************************/
 
 
-/*===========================================================================*/
+
 /**
- * @brief Defines for Timer 1. 
+ * @brief TMR (Timer Mode Register) is a 16-bit memory-mapped register. This 
+ * 				register programs the various timer modes and is cleared by reset.
+ * 				The TMR is used to initialize the timer and control the timer 
+ * 				behavior. This is the most complicated register. It is also the one 
+ * 				you need to be familiar with.
  */
-/*===========================================================================*/ 
-#define	TTMR1 (MBAR+0x00000100)
-#define	TTRR1 (MBAR+0x00000104)
-#define	TTCR1 (MBAR+0x00000108)
-#define	TTCN1 (MBAR+0x0000010c)
-#define	TTER1 (MBAR+0x00000111)
-#define	TTMR2 (MBAR+0x00000120)
-#define	TTRR2 (MBAR+0x00000124)
-#define	TTCR2 (MBAR+0x00000128)
-#define	TTCN2 (MBAR+0x0000012c)
-#define	TTER2 (MBAR+0x00000131)
+#define	TMR1 (MBAR+0x00000100)
+
+
+/** 
+ * @brief Timer 1 configuration. Used to set up the Timer Mode Register. 
+ * 				Used to set and start the timer (1111111100011101).
+ */
+#define TMR_CFG (0xFF1D)
+
+
+/**
+ * @brief The TRR (Timer Reference Register) is a 16-bit register containing
+ * 				the reference value that is compared with the free-running timer counter
+ * 				(TCN) as part of the output-compare function. TRR is a memory-mapped 
+ * 				read/write register.
+ *
+ * 				The TRR takes a user-supplied value that is compared to the Timer Counter
+ * 				to determine when to stop and/or interrupt. The timer counts up to this 
+ * 				number. You tell it how fast to count and what to do when it gets to the 
+ * 				reference number.
+ */ 
+#define	TRR1 (MBAR+0x00000104)
+
+/**
+ * @brief
+ */
+#define	TCR1 (MBAR+0x00000108)
+
+/**
+ * @brief TCN (Timer Counter Register) is a memory-mapped 16-bit counter that
+ * 				you can read at any time. A read cycle to TCN yields the current timer 
+ * 				value and does not affect the counting operation. 
+ *
+ * 				A write of any value to TCN causes it to reset to all zeros. TCN register
+ * 				keeps the current count of the timer. Duh!
+ */ 
+#define	TCN1 (MBAR+0x0000010c)
+#define	TER1 (MBAR+0x00000111)
+#define	TMR2 (MBAR+0x00000120)
+#define	TRR2 (MBAR+0x00000124)
+#define	TCR2 (MBAR+0x00000128)
+#define	TCN2 (MBAR+0x0000012c)
+#define	TER2 (MBAR+0x00000131)
+
+
+// I added this from old main.
+/** 
+ * @brief Timer configuration. Used to set up the Timer Mode Register. 
+ * 				Used to set and start the timer (1111111100011101).
+ */
+#define TMR_CFG (0xFF1D)
+
 
 /*
 	TMR1 is defined as
@@ -53,6 +101,17 @@
 
 	0xFFEC = 65516
  */
+
+
+/**
+ * @brief Used for accessing register addresses.
+ */
+extern typedef unsigned short WORD; 
+
+/* Used for initializing Timer 1. */
+extern short *pTRR1;
+extern short *pTMR1;
+extern short *pTCN1; 
 
 
 /**

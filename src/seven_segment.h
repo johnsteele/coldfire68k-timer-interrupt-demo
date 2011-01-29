@@ -14,6 +14,9 @@
 #ifndef __SEVEN_SEGMENT_H__
 #define __SEVEN_SEGMENT_H__
 
+
+#define	MBAR (0x20000000)
+
 /** 
  * @brief The 7-segment display is an LED digital display. 
  *  			dBug automatically initializes it. It is accessed through memory 
@@ -35,7 +38,7 @@
 #define CSMR3 (MBAR+0x8C) 
 
 /**
- * @brief  Chip Select Control Mode for the display. Used to initialize CSCR3.
+ * @brief Chip Select Control Mode for the display. Used to initialize CSCR3.
  * 					AA - Auto-Acknowledge
  *					R - Read Enabled
  *					W - Write Enabled
@@ -86,14 +89,34 @@
 #define E	  	((unsigned char) (SEG_TOP_CENTER|SEG_TOP_LEFT|SEG_MIDDLE|SEG_BOTTOM_CENTER|SEG_BOTTOM_LEFT))
 #define F	  	((unsigned char) (SEG_TOP_CENTER|SEG_TOP_LEFT|SEG_MIDDLE|SEG_BOTTOM_LEFT))
 
+#define	HEX_MAX 15
 
+/**
+ * @brief Pointer to the seven-segment display. Used to writing hex digits.
+ */
+extern unsigned char *pDisplay; 
 
-/*===========================================================================*/ 
 /**
  * @brief Initializes the seven segment display. 
- */
-/*===========================================================================*/ 
+ */ 
 extern void seven_seg_init(void);
+
+/**
+ * @brief Writes the digit in hexadecimal on the seven segment display. 
+ *
+ * @param digit The digit to display as hexadecimal.
+ */ 
+extern void seven_seg_write_hexdigit (int digit);
+
+/**
+ * @brief Clears the seven segment display. 
+ */
+extern void seven_seg_clear_display (void);
+
+/**
+ * @brief Writes a dot to the seven segment display. 
+ */ 
+extern void seven_seg_write_dot (void);
 
 #endif /* __SEVEN_SEGMENT_H__ */
 
