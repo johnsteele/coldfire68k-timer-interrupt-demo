@@ -13,9 +13,15 @@
 
 #include	"seven_segment.h"
 
+/**
+ * @brief The different values to render on 7-seg display.
+ */
+unsigned char display [] = {DOT, ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, A, B, C, D, E, F};
 
-unsigned char display [] = {ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, A, B, C, D, E, F};
-
+/**
+ * @brief Pointer to the seven-segment display. Used to writing hex digits.
+ */
+unsigned char *pDisplay; 
 
 
 /*===========================================================================*/ 
@@ -33,6 +39,9 @@ void seven_seg_init (void)
 
 	/* Clear Chip Select Mask Register 3 */
 	*pCSMR3 = (short)0;
+
+	/* For assigning values to 7-seg display */
+	pDisplay = (unsigned char *) SEVEN_SEG_DISPLAY;
 } /* end seven_seg_init () */
 
 
@@ -46,9 +55,8 @@ void seven_seg_init (void)
 /*===========================================================================*/ 
 void seven_seg_write_hexdigit (int digit)
 {
-
+	*pDisplay = display [digit];
 } /* end seven_seg_write_hexdigit () */
-
 
 
 /*===========================================================================*/ 
@@ -58,7 +66,7 @@ void seven_seg_write_hexdigit (int digit)
 /*===========================================================================*/ 
 void seven_seg_clear_display (void)
 {
-
+	*pDisplay = 0;
 } /* end seven_seg_clear_display () */
 
 
@@ -69,6 +77,6 @@ void seven_seg_clear_display (void)
 /*===========================================================================*/ 
 void seven_seg_write_dot (void)
 {
-
+	*pDisplay = DOT;
 } /* end seven_seg_write_dot () */
 

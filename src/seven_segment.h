@@ -87,16 +87,13 @@
 #define D	  	((unsigned char) (SEG_TOP_CENTER|SEG_TOP_RIGHT|SEG_TOP_LEFT|SEG_BOTTOM_CENTER|SEG_BOTTOM_RIGHT|SEG_BOTTOM_LEFT))
 #define E	  	((unsigned char) (SEG_TOP_CENTER|SEG_TOP_LEFT|SEG_MIDDLE|SEG_BOTTOM_CENTER|SEG_BOTTOM_LEFT))
 #define F	  	((unsigned char) (SEG_TOP_CENTER|SEG_TOP_LEFT|SEG_MIDDLE|SEG_BOTTOM_LEFT))
+#define	DOT ((unsigned char) SEG_DOT)
 
 /**
  * @brief The number of hex values 0 to 15, so 16.
  */
-#define	HEX_MAX 16
+#define	HEX_MAX 17
 
-/**
- * @brief Pointer to the seven-segment display. Used to writing hex digits.
- */
-extern unsigned char *pDisplay; 
 
 /**
  * @brief Initializes the seven segment display. 

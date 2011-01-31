@@ -15,6 +15,11 @@
 
 #include "interrupt_timer.h"
 
+/**
+ * @brief Used for accessing register addresses.
+ */
+typedef unsigned short WORD; 
+
 
 /*===========================================================================*/
 /**

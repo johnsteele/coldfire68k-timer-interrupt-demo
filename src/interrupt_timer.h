@@ -74,6 +74,12 @@
  */ 
 #define	TCN1 (MBAR+0x0000010c)
 #define	TER1 (MBAR+0x00000111)
+
+
+
+/**
+ * What the hell is timer 2 shit for !
+ */
 #define	TMR2 (MBAR+0x00000120)
 #define	TRR2 (MBAR+0x00000124)
 #define	TCR2 (MBAR+0x00000128)
@@ -102,11 +108,6 @@
 	0xFFEC = 65516
  */
 
-
-/**
- * @brief Used for accessing register addresses.
- */
-extern typedef unsigned short WORD; 
 
 /* Used for initializing Timer 1. */
 extern short *pTRR1;

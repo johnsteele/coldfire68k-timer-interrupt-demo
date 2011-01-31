@@ -50,7 +50,8 @@ __declspec (interrupt) void write_digit (void)
 {
 	static int i = 0;
 	if (i == HEX_MAX) i = 0;
-	seven_seg_write_hex (i++);
+	seven_seg_write_dot ();
+//	seven_seg_write_hexdigit (i++);
 	stop_time ();
 	start_time ();	
 } /* end write_digit () */
