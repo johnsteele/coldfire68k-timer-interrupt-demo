@@ -47,7 +47,6 @@
 #define CS_AA_R_W (0x0183)
 
 
-
 /*===========================================================================*/ 
 /**
  * @brief Values for the seven segment display consists of an 8-bit number, 
@@ -89,7 +88,10 @@
 #define E	  	((unsigned char) (SEG_TOP_CENTER|SEG_TOP_LEFT|SEG_MIDDLE|SEG_BOTTOM_CENTER|SEG_BOTTOM_LEFT))
 #define F	  	((unsigned char) (SEG_TOP_CENTER|SEG_TOP_LEFT|SEG_MIDDLE|SEG_BOTTOM_LEFT))
 
-#define	HEX_MAX 15
+/**
+ * @brief The number of hex values 0 to 15, so 16.
+ */
+#define	HEX_MAX 16
 
 /**
  * @brief Pointer to the seven-segment display. Used to writing hex digits.

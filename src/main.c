@@ -39,6 +39,7 @@ int main (void)
 	 * Start the timer, and run in an endless loop.
 	 */
 	start_time (); 
+
 	while (1);
 
 	return 0; 
