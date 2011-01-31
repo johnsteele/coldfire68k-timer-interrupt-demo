@@ -109,6 +109,12 @@
  */
 
 
+/**
+ * @brief Location of the handler for Timer 1 interrupt. 
+ */
+#define	HANDER_ENTRY (MBAR+0x7C)
+
+
 /* Used for initializing Timer 1. */
 extern short *pTRR1;
 extern short *pTMR1;

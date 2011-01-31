@@ -46,7 +46,7 @@ void register_timer_interrupt (unsigned long function)
 {
 	unsigned long *autovector;
 	setupisr ();
-	autovector  = (unsigned long *)0x7c;
+	autovector  = (unsigned long *)0x7C;
 	*autovector = function;
 } /* end register_timer_interrupt () */
 
