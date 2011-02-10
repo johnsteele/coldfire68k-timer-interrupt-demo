@@ -34,6 +34,70 @@ inline asm void setupisr ()
 } /* end setupisr () */
 
 
+inline asm void init_vbr ()
+{
+	/* 
+	 * A copy of the vector table has been made at 0x30000000 in RAM.
+	 * But the vector base register (VBR) does not point to it, but to 
+	 * the original table in ROM. So se the VBR to the copy in RAM. 
+	 */
+	move.l #0x30000000,A0
+	movec  A0,vbr
+} /* end init_vector_table () */
+
+
+/**
+ * @brief The Interrupt Control Register (ICR) is used to assign the level
+ *        and priority of the interrupt sources. Each ICR is an 8-bit register.
+ */
+// Level 4 priority 1 Autovector. 
+// changed : move.b  #0x90,(A1)  to following
+inline asm void init_icr () 
+{
+	movea.l #ICR9,A1
+	move.b  #0x90,(A1) 
+} /* end init_icr () */
+
+
+inline asm void init_vector_table ()
+{
+	// The IDE generates a vector.s, which does this for me.
+} /* end init_vector_table () */
+
+
+/**
+ * @brief The Interrupt Priority Mask (IPM) occupies bits 8,9,10 (zero based)
+ *        in the Status Register (SR). These three bits form a number between
+ *        0 and 7, which is used to mask output interrupts. With the bits
+ *        set to 000, no interrupts will be masked. 
+ */
+inline asm void init_ipm () 
+{
+	move.w sr,D0
+	bclr   #8,D0
+	bclr   #9,D0
+	bclr   #10,D0
+	move.w D0,sr
+}
+
+/**
+ * @brief The Interrupt Mask Register allows for enable/disabling interrupts
+ *        individually, rather than just by level within the Status Register
+ *        using the Interrupt Priory Mask. So for example you can disable 
+ *        interrupts for just Timer 1. 
+ *        The IMR consists of 16-bits, each bit corresponding to an individual
+ *        interrupt source (e.g., Timer 1, Timer 2, UART, etc). More specifically,
+ *        each bit corresponds to an Interrupt Control Register. Timer 1 is bit
+ *        9. To enable interrupts on Timer 1, you have to clear the appropriate 
+ *        IMR bit. You should preserve the state of other bits. 
+ */
+inline asm void init_imr ()
+{
+	move.l #IMR,A1
+	move.w (A1),D2
+	bclr   #9,D2
+	move.w D2,(A1)
+} /* end init_imr () */
 
 /*===========================================================================*/
 /**
@@ -45,8 +109,15 @@ inline asm void setupisr ()
 void register_timer_interrupt (unsigned long function) 
 {
 	unsigned long *autovector;
+	init_vector_table ();
+	init_vbr ();
+	init_ipm ();
+	init_icr ();
+	init_imr ();
 	setupisr ();
-	autovector  = (unsigned long *)0x7C;
+	
+ 	// Location of the handler for Timer 1 interrupt. 
+	autovector  = (unsigned long *)HANDER_ENTRY; // (VBR+0x070); //--> see pg. 10 of lab2.pdf //(MBAR+0x7C); //(VBR + 0x7C);
 	*autovector = function;
 } /* end register_timer_interrupt () */
 
@@ -62,12 +133,12 @@ void start_time ()
 	volatile WORD *pMem;
 
 	/* Clear the (Timer 1 Mode Register), also stops Timer 1 if it is running. */
-	pMem  = (WORD *)TMR1;
-	*pMem = (WORD)0x0000;
+	pMem  = (WORD *) TMR1;
+	*pMem = (WORD) CLEAR;
 
 	/* Clear the (Timer 1 Counter Register). Sets counter to zero. */
-	pMem  = (WORD *)TCN1;
-	*pMem = (WORD)0x0000;
+	pMem  = (WORD *) TCN1;
+	*pMem = (WORD) CLEAR;
 
 	/* 
 	 * Set (Timer 1 Reference Register) to a reference value. This value will be 
@@ -75,11 +146,18 @@ void start_time ()
 	 * this number to determine when to stop and/or interrupt.  
 	 */
 	pMem  = (WORD *)TRR1;
-	*pMem = (WORD)0x337F;
-
+	*pMem = (WORD)TA_REF_VAL; //0xAFAF;// 0xAFAF; //0x337F; by changing this I got a ~3 second delay, instead of 1.
+	
+	//==============================
+	pMem = (WORD *)CSAR3;
+	*pMem = 0x4000;
+	pMem = (WORD *)CSAR1;
+	*pMem = 0;
+	//==============================
+	
 	/* Set and start the timer */
 	pMem  = (WORD *)TMR1;
-	*pMem = (WORD)TMR_CFG; 
+	*pMem = (WORD) TMR_CFG; //0xFFFD; //0xFF1D; //TMR_CFG; 
 } /* end start_time () */ 
 
 
@@ -94,6 +172,6 @@ void stop_time ()
 	volatile WORD *pMem;
 	/* Clear (Timer 1 Mode Register) and stop the timer. */
 	pMem  = (WORD *)TMR1;
-	*pMem = (WORD)0x0000;	
+	*pMem = (WORD) CLEAR;	
 } /* end stop_time () */
 

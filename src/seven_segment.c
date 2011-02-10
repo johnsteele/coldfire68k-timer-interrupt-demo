@@ -16,7 +16,7 @@
 /**
  * @brief The different values to render on 7-seg display.
  */
-unsigned char display [] = {DOT, ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, A, B, C, D, E, F};
+unsigned char display [] = {ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, A, B, C, D, E, F};
 
 /**
  * @brief Pointer to the seven-segment display. Used to writing hex digits.
@@ -55,7 +55,9 @@ void seven_seg_init (void)
 /*===========================================================================*/ 
 void seven_seg_write_hexdigit (int digit)
 {
-	*pDisplay = display [digit];
+	//int i;
+	*pDisplay = display [digit % 16];
+	//for (i = 0; i < 1000000; i++);
 } /* end seven_seg_write_hexdigit () */
 
 
@@ -66,7 +68,7 @@ void seven_seg_write_hexdigit (int digit)
 /*===========================================================================*/ 
 void seven_seg_clear_display (void)
 {
-	*pDisplay = 0;
+	*pDisplay = (unsigned char) 0x00;
 } /* end seven_seg_clear_display () */
 
 

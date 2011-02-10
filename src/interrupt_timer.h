@@ -12,13 +12,15 @@
  *
  * @brief Contains Timer 1 configurations.
  */
+#include "seven_segment.h"
 
 #ifndef __INTERRUPT_TIMER_H__
 #define __INTERRUPT_TIMER_H__
 
-#ifndef MBAR
-#define	MBAR
-#endif /* MBAR */
+/*#ifndef MBAR
+#define	MBAR (20000001)
+#endif
+*/
 
 /*****************************************************************************
  *								Timer Registers
@@ -99,7 +101,7 @@
 	TMR1 is defined as
 	[15:8] = 0x00 / 0xFF   divide clock by 0 / 256
 	[7:6]  = 00            disable interrupt
-  [5]    = 0             output = active-low pulse	
+    [5]    = 0             output = active-low pulse	
 	[4]    = 0 / 1         disable / enable ref. interrupt
 	[3]    = 0 / 1         free run mode disabled / enabled
 	[2:1]  = 10            master clock/16
@@ -109,11 +111,33 @@
  */
 
 
-/**
- * @brief Location of the handler for Timer 1 interrupt. 
- */
-#define	HANDER_ENTRY (MBAR+0x7C)
 
+
+/**
+ * @brief Interrupt Control Register (ICR) for Timer 1, ICR9. 
+ */
+#define ICR9 (MBAR+0x01C)
+
+/**
+ * @brief The Interrupt Mask Register. 
+ */
+#define IMR (MBAR+0x36)
+
+
+// I added the CSAR1
+#define CSAR3 (MBAR+0x088)
+#define CSAR1 (MBAR+0x070)
+//#define VBR (0x70) // Not sure about this one.
+//#define VBR (0x30000000)
+#define VBR (0x30000000)
+// Location of the autovector handler for Timer 1 interrupt. 
+// The lower 20 bits are zero.
+//#define	HANDER_ENTRY (VBR+0x070)
+#define	HANDER_ENTRY (VBR+0x070)
+
+#define SEVEN_SEG_DELAY (0x337F)
+#define CLEAR (0x0000)
+#define TA_REF_VAL (0x337F)
 
 /* Used for initializing Timer 1. */
 extern short *pTRR1;

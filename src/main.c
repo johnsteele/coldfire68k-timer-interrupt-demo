@@ -18,8 +18,15 @@
 #include	"seven_segment.h"   /* 7-segment display */
 #include	"interrupt_timer.h" /* Timer 1 interrupt */
 
+
+void write_digit (void);
+
+
+volatile static int seven_seg_value;
+
 int main (void)
 { 
+	seven_seg_value = 0;	
 	/* 
 	 * Initialize the seven segment display. 
 	 */
@@ -38,20 +45,16 @@ int main (void)
 	/*
 	 * Start the timer, and run in an endless loop.
 	 */
-	start_time (); 
-
+	start_time (); 	
 	while (1);
 
 	return 0; 
 } /* end main () */
 
-
 __declspec (interrupt) void write_digit (void)
 {
-	static int i = 0;
-	if (i == HEX_MAX) i = 0;
-	seven_seg_write_dot ();
-//	seven_seg_write_hexdigit (i++);
+	if (seven_seg_value == HEX_MAX) seven_seg_value = 0;
+	seven_seg_write_hexdigit (seven_seg_value++);
 	stop_time ();
 	start_time ();	
 } /* end write_digit () */
