@@ -1,5 +1,5 @@
 /**
- * @file	  seven_segment.c 
+ * @file seven_segment.c 
  *
  * @author	John Steele <EMAIL:programjsteele {at} gmail {dot} com>
  * @version	1.0.0
@@ -34,16 +34,21 @@ void seven_seg_init (void)
 	short *pCSCR3 = (short*) CSCR3;
 	short *pCSMR3 = (short*) CSMR3;
 
-	/* Set Chip Select Control Register 3 */
+	/* 
+	 * Set Chip Select Control Register 3 
+	 */
 	*pCSCR3 = (short)CS_AA_R_W;
 
-	/* Clear Chip Select Mask Register 3 */
+	/*
+	 * Clear Chip Select Mask Register 3 
+	 */
 	*pCSMR3 = (short)0;
 
-	/* For assigning values to 7-seg display */
+	/* 
+	 * For assigning values to 7-seg display
+	 */ 
 	pDisplay = (unsigned char *) SEVEN_SEG_DISPLAY;
 } /* end seven_seg_init () */
-
 
 
 /*===========================================================================*/ 
@@ -55,9 +60,7 @@ void seven_seg_init (void)
 /*===========================================================================*/ 
 void seven_seg_write_hexdigit (int digit)
 {
-	//int i;
 	*pDisplay = display [digit % 16];
-	//for (i = 0; i < 1000000; i++);
 } /* end seven_seg_write_hexdigit () */
 
 

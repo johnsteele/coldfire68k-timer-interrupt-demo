@@ -1,5 +1,5 @@
 /**
- * @file	  interrupt_timer.c
+ * @file interrupt_timer.c
  *
  * @author	John Steele <EMAIL:programjsteele {at} gmail {dot} com>
  * @version	1.0.0
@@ -8,15 +8,16 @@
  * 	Created:	Thu 27 Jan 2011 06:20:08 PM PST \n
  * 	Last Update:	Thu 27 Jan 2011 06:20:08 PM PST
  *
- * @brief EE427 Lab-2
+ * @brief EE427 Lab-2.
  *
  * @brief Contains interrupt functionality for Timer 1 on the ColdFire.
  */
 
 #include "interrupt_timer.h"
 
+
 /**
- * @brief Used for accessing register addresses.
+ * @brief For accessing register addresses.
  */
 typedef unsigned short WORD; 
 
@@ -34,52 +35,74 @@ inline asm void setupisr ()
 } /* end setupisr () */
 
 
+/*===========================================================================*/
+/**
+ * @brief Point the vector base register (VBR) to the table in RAM. 
+ * 				By default it points the copy in ROM.  
+ */
+/*===========================================================================*/ 
 inline asm void init_vbr ()
 {
 	/* 
 	 * A copy of the vector table has been made at 0x30000000 in RAM.
 	 * But the vector base register (VBR) does not point to it, but to 
-	 * the original table in ROM. So se the VBR to the copy in RAM. 
+	 * the original table in ROM. So set the VBR to the copy in RAM. 
 	 */
 	move.l #0x30000000,A0
 	movec  A0,vbr
 } /* end init_vector_table () */
 
 
+/*===========================================================================*/ 
 /**
  * @brief The Interrupt Control Register (ICR) is used to assign the level
  *        and priority of the interrupt sources. Each ICR is an 8-bit register.
  */
-// Level 4 priority 1 Autovector. 
-// changed : move.b  #0x90,(A1)  to following
+/*===========================================================================*/ 
 inline asm void init_icr () 
 {
-	movea.l #ICR9,A1
+	/*
+	 * Move ICR for Timer 1 (ICR9) into register. 
+	 */
+	movea.l #ICR9,A1 
+	/*
+	 * Set interrupt to level 4, priority 1 Autovector. 
+	 */	
 	move.b  #0x90,(A1) 
 } /* end init_icr () */
 
 
+/*===========================================================================*/ 
+/**
+ * @brief Sets up the vector table; however, the IDE already does it. 
+ */
+/*===========================================================================*/ 
 inline asm void init_vector_table ()
 {
-	// The IDE generates a vector.s, which does this for me.
+ 	// The IDE generates a vector.s, which does this for me.
 } /* end init_vector_table () */
 
 
+/*===========================================================================*/ 
 /**
  * @brief The Interrupt Priority Mask (IPM) occupies bits 8,9,10 (zero based)
  *        in the Status Register (SR). These three bits form a number between
  *        0 and 7, which is used to mask output interrupts. With the bits
  *        set to 000, no interrupts will be masked. 
  */
+/*===========================================================================*/ 
 inline asm void init_ipm () 
 {
+	// Clear bit 8, 9, 10 of status register. 
 	move.w sr,D0
 	bclr   #8,D0
 	bclr   #9,D0
 	bclr   #10,D0
 	move.w D0,sr
-}
+} /* end init_ipm () */
 
+
+/*===========================================================================*/ 
 /**
  * @brief The Interrupt Mask Register allows for enable/disabling interrupts
  *        individually, rather than just by level within the Status Register
@@ -91,13 +114,15 @@ inline asm void init_ipm ()
  *        9. To enable interrupts on Timer 1, you have to clear the appropriate 
  *        IMR bit. You should preserve the state of other bits. 
  */
+/*===========================================================================*/ 
 inline asm void init_imr ()
-{
+{ 
 	move.l #IMR,A1
 	move.w (A1),D2
 	bclr   #9,D2
 	move.w D2,(A1)
 } /* end init_imr () */
+
 
 /*===========================================================================*/
 /**
@@ -109,7 +134,7 @@ inline asm void init_imr ()
 void register_timer_interrupt (unsigned long function) 
 {
 	unsigned long *autovector;
-	init_vector_table ();
+	// init_vector_table (); --> IDE does it for me. 
 	init_vbr ();
 	init_ipm ();
 	init_icr ();
@@ -117,10 +142,9 @@ void register_timer_interrupt (unsigned long function)
 	setupisr ();
 	
  	// Location of the handler for Timer 1 interrupt. 
-	autovector  = (unsigned long *)HANDER_ENTRY; // (VBR+0x070); //--> see pg. 10 of lab2.pdf //(MBAR+0x7C); //(VBR + 0x7C);
+	autovector  = (unsigned long *)HANDER_ENTRY; 
 	*autovector = function;
 } /* end register_timer_interrupt () */
-
 
 
 /*===========================================================================*/
@@ -132,11 +156,15 @@ void start_time ()
 {
 	volatile WORD *pMem;
 
-	/* Clear the (Timer 1 Mode Register), also stops Timer 1 if it is running. */
+	/* 
+	 * Clear the (Timer 1 Mode Register), also stops Timer 1 if it is running. 
+	 */
 	pMem  = (WORD *) TMR1;
 	*pMem = (WORD) CLEAR;
 
-	/* Clear the (Timer 1 Counter Register). Sets counter to zero. */
+	/* 
+	 * Clear the (Timer 1 Counter Register). Sets counter to zero. 
+	 */
 	pMem  = (WORD *) TCN1;
 	*pMem = (WORD) CLEAR;
 
@@ -145,21 +173,23 @@ void start_time ()
 	 * compared with the free-running timer counter (TCN1). TCN1 will count up to
 	 * this number to determine when to stop and/or interrupt.  
 	 */
-	pMem  = (WORD *)TRR1;
-	*pMem = (WORD)TA_REF_VAL; //0xAFAF;// 0xAFAF; //0x337F; by changing this I got a ~3 second delay, instead of 1.
-	
-	//==============================
-	pMem = (WORD *)CSAR3;
-	*pMem = 0x4000;
-	pMem = (WORD *)CSAR1;
-	*pMem = 0;
-	//==============================
-	
-	/* Set and start the timer */
-	pMem  = (WORD *)TMR1;
-	*pMem = (WORD) TMR_CFG; //0xFFFD; //0xFF1D; //TMR_CFG; 
-} /* end start_time () */ 
+	pMem  = (WORD *) TRR1;
+	*pMem = (WORD) TA_REF_VAL; 
 
+	/*
+	 * Set chip select address register 3 and 1. 
+	 */	
+	pMem = (WORD *) CSAR3;
+	*pMem = 0x4000;
+	pMem = (WORD *) CSAR1;
+	*pMem = 0;
+
+	/* 
+	 * Set and start the timer 
+	 */
+	pMem  = (WORD *) TMR1;
+	*pMem = (WORD) TMR_CFG; 
+} /* end start_time () */ 
 
 
 /*===========================================================================*/
@@ -170,8 +200,11 @@ void start_time ()
 void stop_time () 
 { 
 	volatile WORD *pMem;
-	/* Clear (Timer 1 Mode Register) and stop the timer. */
-	pMem  = (WORD *)TMR1;
+
+	/* 
+	 * Clear (Timer 1 Mode Register) and stop the timer. 
+	 */
+	pMem  = (WORD *) TMR1;
 	*pMem = (WORD) CLEAR;	
 } /* end stop_time () */
 

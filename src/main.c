@@ -1,5 +1,5 @@
 /**
- * @file	  main.c
+ * @file main.c
  *
  * @author	John Steele <EMAIL:programjsteele {at} gmail {dot} com>
  * @version	1.0.0
@@ -19,14 +19,34 @@
 #include	"interrupt_timer.h" /* Timer 1 interrupt */
 
 
-void write_digit (void);
+/**
+ * @brief The Timer 1 ISR. Updates the 7-segment display with the next value. 
+ *        digit.  
+ */
+void write_digit (void); 
 
-
+/**
+ * @brief The current value displayed on the 7-segment display. 
+ *        Used by the write_digit ISR. 
+ */
 volatile static int seven_seg_value;
 
+
+/*===========================================================================*/
+/**
+ * @brief Initializes the seven segment display and Timer 1 interrupts, then
+ * 				runs in endless loop. 
+ *
+ * @return Zero for success.  		  
+ */
+/*===========================================================================*/
 int main (void)
-{ 
+{
+	/*
+	 * Initialize seven segment display value. 
+	 */	
 	seven_seg_value = 0;	
+
 	/* 
 	 * Initialize the seven segment display. 
 	 */
@@ -51,10 +71,24 @@ int main (void)
 	return 0; 
 } /* end main () */
 
+
+/*===========================================================================*/
+/**
+ * @brief The Timer 1 ISR. Updates the 7-segment display with the next value. 
+ */ 
+/*===========================================================================*/
 __declspec (interrupt) void write_digit (void)
 {
+	/*
+	 * Restart count to zero if current value is F. 
+	 */
 	if (seven_seg_value == HEX_MAX) seven_seg_value = 0;
+
+	/*
+	 * Write the next value to the 7-segment display. 
+	 */
 	seven_seg_write_hexdigit (seven_seg_value++);
+
 	stop_time ();
 	start_time ();	
 } /* end write_digit () */
